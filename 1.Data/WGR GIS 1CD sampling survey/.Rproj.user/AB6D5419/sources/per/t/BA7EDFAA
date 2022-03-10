@@ -1,0 +1,26 @@
+{
+    "id": "BA7EDFAA",
+    "path": "~/Documents/MARSS models/3. Figures_Graphs/Sampling desings/Maps with R/WGR GIS 1CD sampling survey/Convert .csv into a .shp file.R",
+    "project_path": "Convert .csv into a .shp file.R",
+    "type": "r_source",
+    "hash": "1353394291",
+    "contents": "",
+    "dirty": false,
+    "created": 1643014673120.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "46,21",
+        "scrollLine": "38"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1643023952,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1643023952978,
+    "read_only": false,
+    "read_only_alternatives": []
+}

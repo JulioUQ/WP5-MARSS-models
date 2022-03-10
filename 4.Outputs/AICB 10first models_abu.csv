@@ -1,0 +1,11 @@
+"Model","Hipothesis","Covariates","U","Q","Z","K","AICb","dAICb"
+1,4,"Catch_U","equal","diagonal and equal",3,20,199.556829647786,0
+2,4,"Catch_L","equal","diagonal and equal",3,20,201.997306676632,2.440477028846
+3,3,"-","unequal","diagonal and equal",3,15,205.976818598444,6.419988950658
+4,7,"NAO_L","unequal","diagonal and equal",2,12,206.078299371197,6.521469723411
+5,4,"NAO_L","unequal","diagonal and equal",3,18,206.384896725354,6.82806707756799
+6,6,"NAO_U","equal","diagonal and unequal",3,10,206.472756817707,6.91592716992099
+7,4,"NAO_U","unequal","diagonal and equal",3,18,206.698484094073,7.14165444628699
+8,3,"NAO_L","unequal","diagonal and equal",3,15,206.793907999292,7.237078351506
+9,8,"Catch_L","equal","diagonal and unequal",2,9,206.954425731286,7.39759608349999
+10,3,"Catch_L","equal","diagonal and equal",3,20,207.30544243537,7.74861278758399

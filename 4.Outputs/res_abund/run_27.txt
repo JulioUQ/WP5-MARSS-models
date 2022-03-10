@@ -1,0 +1,26 @@
+
+MARSS fit is
+Estimation method: kem 
+Convergence test: conv.test.slope.tol = 100, abstol = 0.001
+Estimation converged in 34 iterations. 
+Log-likelihood: -91.42777 
+AIC: 206.8555   AICc: 212.1437   AICbp(param): 629.8985   
+ 
+       Estimate
+R.GR     0.3874
+R.ICE    0.3002
+R.NEA    0.3297
+U.1     -0.1324
+U.2     -0.0329
+U.3     -0.0529
+U.4     -0.0901
+Q.diag   0.1832
+x0.1     1.5735
+x0.2     0.0830
+x0.3     0.3455
+x0.4     0.2489
+Initial states (x0) defined at t=0
+
+Standard errors have not been calculated. 
+Use MARSSparamCIs to compute CIs and bias estimates.
+

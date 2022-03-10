@@ -1,0 +1,4 @@
+rm(list=ls())
+
+ice <- read_csv("D_TOTAL Abundance_GHLE_98-17 Year Sex Julio.csv", col_names = TRUE)
+wgr <- read_csv("D_HAULS_GHLW_97-19_1CD.csv", col_names = TRUE)

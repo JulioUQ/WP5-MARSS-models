@@ -1,0 +1,88 @@
+###############################################
+#  Preparing and mergins abundance timeseries #
+###############################################
+
+# It is a systematic manner to (1) Exploring the abundance distribution over the study period, (2) Graphics of abundance distribution in the survey
+# (3) Prepare data for MARSS model
+
+## Authors: Julio Ubeda Quesada
+## Contact: julioubedaquesada@gmail.com
+
+## Greenland Institute of Natural Resources
+## Last modified: November 2021
+
+##############################################################################################################
+
+rm(list=ls())
+
+######### This script is written in a fix directory. Use the following function to fix a new one if it's necessary.
+setwd()
+
+# Libraries. Default libraries included, make sure you install and load if you need more
+
+library(tidyverse)
+library(ggpubr)
+library(reshape2)
+
+
+# 1º Time-series of abundance time series for the North Atlantic.
+
+NORSL = data.frame(read.table('Norway slope biomass times-series.csv', header=TRUE, sep=","))      
+EG = data.frame(read.table('East Greenland biomass times-series.csv', header=TRUE, sep=","))     
+ICE = data.frame(read.table('Iceland biomass times-series.csv', header=TRUE, sep=","))        
+WGR = data.frame(read.table('Greenland & Canada combined biomass times-series.csv', header=TRUE, sep=","))
+
+WGR$Region <- "WGR" 
+EG$Region <- "EG" 
+ICE$Region <- "ICE"
+
+## 2- Homogenize columns names 
+colnames(EG) <- colnames(WGR) 
+colnames(ICE) <- colnames(WGR) 
+colnames(NORSL) <- colnames(WGR) 
+
+## 3. TOTAL ABUNDANCE OF GREENLAND SURVEY, ICELAND SURVEY, NORWAY SURVEY
+# 3.1 Merging the dataframes. 
+
+GHL_TOTAL <- rbind(EG, ICE, WGR, NORSL) 
+
+str(GHL_TOTAL)
+GHL_TOTAL$B <- as.numeric(GHL_TOTAL$B)
+
+head(GHL_TOTAL)
+tail(GHL_TOTAL)
+
+GHL_TOTAL[is.na(GHL_TOTAL)] <- 0 
+
+write.table(GHL_TOTAL, "Total Biomass GHL in NAFO & ICES.csv", col.names = TRUE , row.names = FALSE, sep= ",")
+
+## 5. Saving the datasets by sex
+
+GHL_TOTAL_1 = melt(GHL_TOTAL, value.name = "B", id.vars = c("year", "Region"))
+
+head(GHL_TOTAL_1, 3)
+head(GHL_TOTAL_1, 3)
+
+## 6. Migrating from long to wide direction
+
+GHL_TOTAL_1<- arrange(GHL_TOTAL_1, year)
+GHL_TOTAL_2= reshape(GHL_TOTAL_1, direction="wide", timevar="year", idvar="Region", v.name='B') 
+
+# 7. Saving pivoted datasets
+
+colnames(GHL_TOTAL_2)[3:ncol(GHL_TOTAL_2)] <- 1996:2019
+GHL_TOTAL_2[is.na(GHL_TOTAL_2)] <- 0 
+GHL_TOTAL_2[GHL_TOTAL_2 == 0] <- NA
+
+GHL_TOTAL_2 <- select(GHL_TOTAL_2, -variable)
+
+write.table(GHL_TOTAL_2, "MARSS-input-Total Biomass.csv", col.names = TRUE , row.names = FALSE, sep= ",")
+
+#############    TAIL    #################
+
+# With this script you have: (1) Imported all the time series, (2) Homogenize the columns names in order to merge them,
+# (3) Reshape the dataframe from long to wide form (4) prepared subsets of interest for MARSS model by sex.
+
+
+## The whole process has been saved in the FILE: MARSS-input-Total MALES Abundance by length and depth_prepared.csv.
+## The whole process has been saved in the FILE: MARSS-input-Total FEMALES Abundance by length and depth_prepared.csv.

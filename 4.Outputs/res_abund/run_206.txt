@@ -1,0 +1,26 @@
+
+MARSS fit is
+Estimation method: kem 
+Convergence test: conv.test.slope.tol = 100, abstol = 0.001
+Estimation converged in 502 iterations. 
+Log-likelihood: -87.09261 
+AIC: 198.1852   AICc: 203.4734   AICbp(param): 206.3849   
+ 
+                 Estimate
+A.WestGreenland  0.021814
+R.GR             0.453741
+R.ICE            0.814813
+R.NEA            0.905933
+U.1             -0.241196
+U.2             -0.097643
+U.3             -0.121879
+Q.diag           0.000382
+x0.1             2.356896
+x0.2             0.532434
+x0.3             0.778585
+C.nao           -0.318771
+Initial states (x0) defined at t=0
+
+Standard errors have not been calculated. 
+Use MARSSparamCIs to compute CIs and bias estimates.
+

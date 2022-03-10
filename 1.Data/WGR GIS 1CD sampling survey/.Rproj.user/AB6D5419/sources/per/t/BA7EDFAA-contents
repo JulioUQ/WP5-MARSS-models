@@ -1,0 +1,60 @@
+##################################
+#  Convert .csv  into .shp files #
+##################################
+#
+# It is a systematic manner to (1) (2) (3)
+#
+# Authors: Julio Ubeda Quesada
+# Contact: julioubedaquesada@gmail.com
+# Institution: Aristotle University of Thessaloniki
+# Last modified: January 2022
+##################################
+rm(list=ls())
+
+#> This script is written in a fix directory. Use the following function to fix a new one if it's necessary.
+setwd()
+
+#> Libraries. Default libraries included, make sure you install and load if you need more.
+library(sf)
+library(tidyverse)
+library(ggOceanMaps)
+library(ggnewscale)
+library(sfheaders)
+
+#> 1. Raw data.
+WgrData <- read.csv(file="D_HAULS_GHLW_97-19_1CD.csv", header=TRUE, sep=",")
+str(WgrData)
+class(WgrData) # data.frame
+
+#> 2. Sorted data
+WgrData$wpos = WgrData$wpos*-1
+
+#> 3. Method sf. 
+#> Transform to a Spatial file with the fittest projection to out coordinates. 
+#> You can check out what CRS fits the best with your data here:https://www.spatialreference.org.
+WgrData_prj84_sf <- st_as_sf(WgrData, coords = c("wpos", "npos"), dim = "XY",
+                          crs = 4326, na.fail = FALSE) # EPSG
+st_crs(WgrData_prj84_sf)
+class(WgrData_prj84_sf) # sf     data.frame
+head(WgrData_prj84_sf)
+
+#> 4. Plot.
+plot(WgrData_prj84_sf)
+mapview::mapview(st_transform(x4, crs = 4326)) # Interactive basemap
+ggOceanMaps::qmap(WgrData_prj84_sf, fill = I("red"), alpha = I(0.5), rotate = TRUE, labs(fill= "project"))
+
+#> 5. Transform from POINTS into POLYGONS
+#> IT IS NOT GOOD!!!!
+ x4 <- st_union(WgrData_prj84_sf) %>%
+   st_make_valid() %>%
+   st_as_sf() %>%
+   st_cast("POLYGON") %>% 
+   add_column(survey = "West Greenland")  %>%  
+   rename("geom" = "x") %>%
+   suppressMessages() %>%
+   suppressWarnings()
+
+ggOceanMaps::qmap(x4, fill = I("red"), alpha = I(0.5), rotate = TRUE, labs(fill= "project"))
+
+#> 6. Save vector spatial object.
+st_write(WgrData_prj84_sf, "wgr_ghalibut_stations.shp")

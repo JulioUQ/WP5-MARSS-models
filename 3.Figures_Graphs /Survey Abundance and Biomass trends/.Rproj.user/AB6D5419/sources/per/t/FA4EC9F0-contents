@@ -1,0 +1,413 @@
+## ---------------------------
+##
+## Script name: MARSS_MS_FIGURES.
+##
+## Purpose of script: Visualize time-series and mappinng surveys areas using ggplot and ggOceanMap package
+##
+## Author: Julio Ubeda Quesada // Greenland Institue of Natural Resources, Greenland
+## Email: julioubedaquesada@gmail.com
+##
+## Date Created: 2022-01-20
+##
+## ---------------------------
+
+#> Libraries
+Packages <- c("tidyverse", "ggpubr", "sf", "ggOceanMaps", "ggnewscale", "sfheaders")
+lapply(Packages, library, character.only = TRUE)
+
+rm(list=ls())
+
+#> CATCH DATA
+catch = data.frame(read.table("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Covariates/Commercial catches/Cov_catch.csv", 
+                              header=TRUE, sep = ";"))
+catch$year = 1996:2019
+head(catch)
+
+## 1. COMMERCIAL CATCHES PLOT
+catch_plot <- ggplot(catch, aes(x = year)) +
+  geom_point(aes(y = DivA0.ABCD1, colour = "DivA0-1A-F"), size = 2) +
+  geom_line(aes(y = DivA0.ABCD1, colour = "DivA0-1A-F"), size = 1.5) + 
+  geom_point(aes(y = Area5a.5b.12.14b, colour = "Subareas 5,6,12 and 14"), size = 2) +
+  geom_line(aes(y = Area5a.5b.12.14b, colour = "Subareas 5,6,12 and 14"), size = 1.5) + 
+  geom_point(aes(y = Subarea1.2, colour = "Subareas 1 and 2"), size = 2) +
+  geom_line(aes(y = Subarea1.2, colour = "Subareas 1 and 2"), size = 1.5) + 
+  labs(y = "Nominal catch (tons)", x = "Years", face = "bold") +
+  scale_x_continuous(breaks = 1996:2019) +
+  theme(legend.position = "top",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20, face = "bold"),
+        panel.border = element_rect(linetype = "solid", fill = NA),
+        panel.background = element_rect(fill ="white"),
+        panel.grid.major.x = element_blank(), 
+        panel.grid.major.y = element_blank(),
+        axis.title.x = element_text(colour = "black", size = 30, angle = 0, hjust = .5, vjust = 0, face = "bold", margin = margin(t =10)),
+        axis.text.x = element_text(colour = "black", size = 25, angle = 90, hjust = .5, vjust = 0.5, face = "bold"),
+        axis.title.y.left = element_text(colour = "black", size = 30, angle = 90, hjust = .5, vjust = 0, face = "bold", margin = margin(r = 10)),
+        axis.text.y.left = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold"))
+catch_plot
+
+setwd("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs")
+ggsave("Commercial catches of GHL in North Atlantic_1996-2019.png", dpi = 300, units = "cm", height = 25, width = 40) 
+
+#> BIOMASS AND ABUNDANCE DATA 
+rm(list=ls())
+
+ice_a = read_csv('/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Abundance and Biomass trends/Iceland Abundance times-series.csv') 
+egr_a = read_csv('/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Abundance and Biomass trends/East Greenland Abundance times-series.csv')
+wgr_a = read_csv('/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Abundance and Biomass trends/West Greenland abundance times-series.csv') 
+nas_a = read_csv('/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Abundance and Biomass trends/Norway slope Abundance times-series.csv') 
+
+ice_b = read_csv('/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Abundance and Biomass trends/Iceland Biomass times-series.csv')
+egr_b = read_csv('/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Abundance and Biomass trends/East Greenland Biomass times-series.csv') 
+wgr_b = read_csv('/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Abundance and Biomass trends/Greenland & Canada combined biomass times-series.csv') 
+nas_b = read_csv('/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Abundance and Biomass trends/Norway slope Biomass times-series.csv')
+
+## ICELAND
+Ice = merge(ice_a, ice_b, by = "year")
+Ice[Ice == 0] <- NA
+
+## 2. PLOT ICELAND
+ICE_plot <- ggplot(Ice, aes(x = year)) +
+  geom_point(aes(y = N, colour = "Abundance"), size = 2) +
+  geom_point(aes(y = B, colour = "Biomass"), size = 2) +
+  geom_line(aes(y = N, colour = "Abundance"), size = 1.5) + 
+  geom_line(aes(y = B, colour = "Biomass"), size = 1.5) +
+  scale_y_continuous(sec.axis = sec_axis(~.*1, name = "Biomass (tons)",breaks = c(15000, 30000, 45000, 60000)), breaks = c(15000, 30000, 45000, 60000)) +
+  scale_colour_manual(values = c("blue", "red")) +
+  labs(y = "Abundance ('000s)", x = "Years", colour = "Index", face = "bold") +
+  scale_x_continuous(breaks = 1996:2019) +
+  ggtitle("C)") +
+  theme(legend.title = element_blank(),
+        legend.text = element_text(size = 25, face ="bold"),
+        plot.title = element_text(size = 20, vjust = -10, hjust = .05),
+        panel.border = element_rect(linetype = "solid", fill = NA),
+        panel.background = element_rect(fill ="white"),
+        panel.grid.major.x = element_blank(), 
+        panel.grid.major.y = element_blank(), 
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.title.y.left = element_blank(),
+        axis.text.y.left = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold"),
+        axis.title.y.right = element_blank(), 
+        axis.text.y.right = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold"))
+ICE_plot
+
+## EAST GREENLAND
+Egr = merge(egr_a, egr_b, by = "year")
+Egr_1 <- select(Egr, -Region)
+Egr_1[Egr_1 == 0] <- NA
+
+## 3. PLOT EAST GREENLAND
+EGR_plot <- ggplot(Egr_1, aes(x = year)) +
+  geom_point(aes(y = N, colour = "Abundance"), size = 2) +
+  geom_point(aes(y = B, colour = "Biomass"), size = 2) +
+  geom_line(aes(y = N, colour = "Abundance"), size = 1.5) + 
+  geom_line(aes(y = B, colour = "Biomass"), size = 1.5) +
+  scale_y_continuous(sec.axis = sec_axis(~.*1, name = "Biomass (tons)",breaks = c(6000, 12000, 18000, 24000)), breaks = c(6000, 12000, 18000, 24000)) +
+  scale_colour_manual(values = c("blue", "red")) +
+  labs(y = "Abundance ('000s)", x = "Years", colour = "Index", face = "bold") +
+  scale_x_continuous(breaks = 1996:2019) +
+  ggtitle("B)") +
+  theme(legend.title = element_blank(),
+        legend.text = element_text(size = 25, face = "bold"),
+        plot.title=element_text(size=20, vjust = -10, hjust = .05),
+        panel.border = element_rect(linetype = "solid", fill = NA),
+        panel.background = element_rect(fill ="white"),
+        panel.grid.major.x = element_blank(), 
+        panel.grid.major.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.title.y.left = element_blank(),
+        axis.text.y.left = element_text(colour = "black", size = 25, angle = 0, hjust = 0, vjust = 0, face = "bold"),
+        axis.title.y.right = element_blank(),
+        axis.text.y.right = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold"))
+EGR_plot
+
+## WEST GREENLAND
+Wgr_1 <- merge(wgr_a, wgr_b, by = "year")
+Wgr_1 <- select(Wgr_1, -Region.x, -Region.y)
+Wgr_1[Wgr_1 == 0] <- NA
+
+## 4. PLOT WEST GREENLAND
+WGR_plot <- ggplot(Wgr_1, aes(x = year)) +
+  geom_point(aes(y = N, colour = "Abundance"), size = 2) +
+  geom_point(aes(y = B, colour = "Biomass"), size = 2) +
+  geom_line(aes(y = N, colour = "Abundance"), size = 1.5) + 
+  geom_line(aes(y = B, colour = "Biomass"), size = 1.5) +
+  scale_y_continuous(sec.axis = sec_axis(~.*1, name = "Biomass (tonnes)")) +
+  scale_colour_manual(values = c("blue", "red")) +
+  labs(y = "Abundance ('000s)", x = "Years", colour = "Index", face = "bold") +
+  ggtitle("A)") +
+  scale_x_continuous(breaks = 1996:2019) +
+  theme(legend.title = element_blank(),
+        legend.text = element_text(size = 25, face = "bold"),
+        plot.title=element_text(size=20, vjust = -10, hjust = .05),
+        panel.border = element_rect(linetype = "solid", fill = NA),
+        panel.background = element_rect(fill ="white"),
+        panel.grid.major.x = element_blank(), 
+        panel.grid.major.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.title.y.left = element_blank(),
+        axis.text.y.left = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold"),
+        axis.title.y.right = element_blank(),
+        axis.text.y.right = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold"))
+WGR_plot
+
+## NORWEGIAN SLOPE SURVEY
+Nas <- merge(nas_a, nas_b)
+Nas[Nas == 0] <- NA
+
+## 5. PLOT NORWEGIAN SLOPE
+NAS_plot <- ggplot(Nas, aes(x = year)) +
+  geom_point(aes(y = N, colour = "Abundance"), size = 2) +
+  geom_point(aes(y = B, colour = "Biomass"), size = 2) +
+  geom_line(aes(y = N, colour = "Abundance"), size = 1.5) + 
+  geom_line(aes(y = B, colour = "Biomass"), size = 1.5) +
+  scale_y_continuous(sec.axis = sec_axis(~.*1, name = "Biomass (tonnes)",breaks = c(25000, 50000, 75000, 100000)), breaks = c(25000, 50000, 75000, 100000)) +
+  scale_colour_manual(values = c("blue", "red")) +
+  labs(y = "Abundance ('000s)", x = "Years", colour = "Index", face = "bold") +
+  ggtitle("D)") +
+  scale_x_continuous(breaks = 1996:2019) +
+  theme(legend.text = element_text(size = 25, face = "bold"),
+        plot.title=element_text(size=20, vjust = -10, hjust = .05),
+        panel.border = element_rect(linetype = "solid", fill = NA),
+        panel.background = element_rect(fill ="white"),
+        panel.grid.major.x = element_blank(), 
+        panel.grid.major.y = element_line(size =.1, color ="grey"),
+        axis.title.x = element_text(colour = "black", size = 30, angle = 0, hjust = .5, vjust = 0, face = "bold"),
+        axis.text.x = element_text(colour = "black", size = 25, angle = 90, hjust = .5, vjust = 0.5, face = "bold"),
+        axis.title.y.left = element_blank(),
+        axis.text.y.left = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold"),
+        axis.title.y.right = element_blank(),
+        axis.text.y.right = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold"))
+NAS_plot
+
+plot_1 <- ggarrange(WGR_plot, EGR_plot, ICE_plot, NAS_plot,
+                    nrow = 4, 
+                    common.legend = TRUE)                           
+plot_1 
+
+setwd("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs")
+ggsave("Greenland halibut Abundance and Biomass trends in the North Atlantic_plot.png", dpi = 300, units = "cm", height = 60, width = 40) 
+
+#> MAPPING SURVEY AREAS WITH ggOceanMaps
+rm(list=ls())
+
+ca <- read_sf("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Sampling desings/Maps with R/CAN GIS 0A sampling survey/NAFO_0A_Index_Strata_Julio.shp")
+en <- read_sf("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Sampling desings/Maps with R/NOR GIS continental slope survey/EggaN_strata_for_Julio.shp")
+ice_egr <- read.csv("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Sampling desings/Maps with R/ICE GIS sampling survey/iceland_greenland_strata.csv") %>% 
+  arrange(stratum, order) %>%
+  sfheaders::sf_polygon(., x = "lon", y = "lat", polygon_id = "stratum") %>%
+  st_set_crs(4326)
+
+head(ca)
+head(en)
+head(ice_egr)
+
+# Turn off the s2 mode
+s2_mode <- sf::sf_use_s2()
+suppressMessages(sf::sf_use_s2(FALSE))
+
+#> Canada data
+#> Creating a spatial file with coordinates limited
+x1 <- st_union(ca) %>%
+  st_make_valid() %>%
+  st_as_sf() %>%
+  # smoothr::drop_crumbs(., units::set_units(1e4, "km^2", mode = "standard")) %>% # remove small fragments
+  nngeo::st_remove_holes() %>% # to remove holes
+  add_column(survey = "Canadian 0A")  %>%  
+  rename("x" = "geom") %>%
+  suppressMessages() %>%
+  suppressWarnings()
+
+ggOceanMaps::qmap(x1, fill = I("red"), alpha = I(0.5), rotate = TRUE, labs(fill= "survey")) # requires the newest version of ggOceanMaps
+
+#> Norway data
+x2 <- sf::st_union(en) %>%
+  sf::st_make_valid() %>%
+  sf::st_as_sf() %>%
+  tibble::add_column(survey = "Norwegian Slope") %>% 
+  suppressMessages()
+
+ggOceanMaps::qmap(x2, fill = I("blue"), alpha = I(0.5), rotate = TRUE, labs(fill= "survey")) # requires the newest version of ggOceanMaps
+
+#> Iceland data
+ice1 <- ice_egr[ice_egr$stratum %in% c(9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28), ]
+
+x3 <- sf::st_make_valid(ice1) %>%
+  sf::st_union() %>%
+  sf::st_as_sf() %>%
+  smoothr::drop_crumbs(., units::set_units(1e4, "km^2", mode = "standard")) %>% # remove small fragments
+  nngeo::st_remove_holes() %>% # to remove holes
+  tibble::add_column(survey = "Iceland") %>%
+  rename("x" = "geom") %>%
+  suppressMessages() %>%
+  suppressWarnings()
+
+ggOceanMaps::qmap(x3, fill = I("green"), alpha = I(0.5), rotate = TRUE, labs(fill= "survey")) # requires the newest version of ggOceanMaps
+
+#> West Greenland data
+devtools::install_github("DeepWaterIMR/RstoxStrata")
+library(RstoxStrata)
+
+link <- "~/Desktop/gebco_2021/GEBCO_2021.nc" # Link to bathymetry data
+
+geostrata.df <- data.frame(
+  lon.min = c(-58, -58),
+  lon.max = c(-51, -51),
+  lat.min = c(64.2, 62.4),
+  lat.max = c(66.2, 64.2)
+)
+
+depths.vec <- c(400, 1500)
+
+boundary.vec <- c(-58, -51, 62, 67)
+
+pols <- strataPolygon(
+  bathy = link,
+  depths = depths.vec,
+  boundary = boundary.vec,
+  geostrata = geostrata.df,
+  fragment.area = 1000
+)
+
+x4 <- sf::st_union(pols$strata) %>%
+  sf::st_make_valid() %>%
+  sf::st_as_sf() %>%
+  tibble::add_column(survey = "West Greenland") %>% 
+  suppressMessages()
+
+ggOceanMaps::qmap(x4, fill = I("purple"), alpha = I(0.5), rotate = TRUE, labs(fill= "survey")) # requires the newest version of ggOceanMaps
+
+#> East Greenland data
+egr1 <- ice_egr[ice_egr$stratum %in% c(1, 2, 3, 4, 5, 6, 7, 8), ]
+
+x5 <- sf::st_make_valid(egr1) %>%
+  sf::st_union() %>%
+  sf::st_as_sf() %>%
+  #smoothr::drop_crumbs(., units::set_units(1e4, "km^2", mode = "standard")) %>% # remove small fragments
+  #nngeo::st_remove_holes() %>% # to remove holes
+  tibble::add_column(survey = "East Greenland") %>%
+  #rename("x" = "geom") %>%
+  suppressMessages() %>%
+  suppressWarnings()
+
+ggOceanMaps::qmap(x5, fill = I("yellow"), alpha = I(0.5), rotate = TRUE, labs(fill= "survey"))
+
+#> Combine the survey samplings in a spatial file
+x_combined <- rbind(x1, x2, x3, x4, x5)
+class(x_combined)
+
+#> Displaying both spatial files in the same map.
+ggOceanMaps::basemap(limits = sf::st_bbox(x_combined)[c("xmin", "xmax", "ymin", "ymax")],
+                     bathymetry = TRUE, bathy.style = "poly_greys", legends = FALSE) +
+  ggnewscale::new_scale_fill() +
+  geom_sf(data = x_combined, aes(fill = survey), alpha = 0.8, color = NA) +
+  labs(fill = "Survey", color = "Survey") +
+  theme(legend.title = element_text(size = 20, face = "bold"),
+        legend.text = element_text(size = 15),
+        axis.title.x = element_text(colour = "black", size = 20, angle = 0, hjust = .5, vjust = 0, face = "bold", margin = margin(t =5)),
+        axis.text.x = element_text(colour = "black", size = 15, angle = 0, hjust = .5, vjust = 0.5, face = "bold"),
+        axis.title.y = element_text(colour = "black", size = 20, angle = 90, hjust = .5, vjust = 0, face = "bold", margin = margin(r = 5)),
+        axis.text.y = element_text(colour = "black", size = 15, angle = 0, hjust = .5, vjust = 0, face = "bold"))
+
+x_combined_plot
+class(x_combined_plot)
+
+setwd("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs")
+
+#> BEST-FIT MODEL STATE PROCESSES DATA
+rm(list=(ls()))
+
+bmod_abu <- read_csv("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Abundance state process trends/Best-fit model with abundance data.csv")
+bmod_bio <- read_csv("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Biomass state process trends/Best-fit model with Biomass data.csv")
+
+## 11. ABUNDANCE STATE PROCESESS
+bmod_abu_plot <- ggplot(data=bmod_abu,
+       aes(x=Year, y=log.abu, colour = States)) +
+  geom_point(size = 2) +
+  geom_line(size = 1.5) + 
+  geom_errorbar(aes(ymax = log.abu+se, ymin = log.abu-se)) +
+  xlab("Years") + ylab("Log-Abundance") +
+  facet_grid(States~.) +
+  scale_x_continuous(breaks = 1996:2019) +
+  theme(legend.text = element_text(size = 25, face = "bold"),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.title = element_blank(),
+        panel.border = element_rect(linetype = "solid", fill = NA),
+        panel.background = element_rect(fill ="white"),
+        panel.grid.major.x = element_blank(), 
+        panel.grid.major.y = element_blank(), 
+        axis.title.x = element_text(colour = "black", size = 30, angle = 0, hjust = .5, vjust = 0, face = "bold"),
+        axis.text.x = element_text(colour = "black", size = 25, angle = 90, hjust = .5, vjust = 0.5, face = "bold"),
+        axis.title.y = element_text(colour = "black", size = 30, angle = 90, hjust = .5, vjust = 0, face = "bold", margin = margin(r = 10)),
+        axis.text.y = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold")) + 
+  theme(legend.position="top")
+bmod_abu_plot
+
+setwd("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs")
+ggsave("Best-fit_model_with_abundance_data.png", dpi = 300, units = "cm", height = 20, width = 40)
+
+## 12. BIOMASS STATE PROCESESS
+bmod_bio_plot <- ggplot(data=bmod_bio,
+                     aes(x=Year, y=log.bio, colour = States)) +
+  geom_point(size = 2) +
+  geom_line(size = 1.5) + 
+  geom_errorbar(aes(ymax = log.bio+se, ymin = log.bio-se)) +
+  xlab("Years") + ylab("Log-Biomass") +
+  facet_grid(States~.) +
+  scale_x_continuous(breaks = 1996:2019) +
+  theme(strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 25, face = "bold"),
+        panel.border = element_rect(linetype = "solid", fill = NA),
+        panel.background = element_rect(fill ="white"),
+        panel.grid.major.x = element_blank(), 
+        panel.grid.major.y = element_blank(), 
+        axis.title.x = element_text(colour = "black", size = 30, angle = 0, hjust = .5, vjust = 0, face = "bold"),
+        axis.text.x = element_text(colour = "black", size = 25, angle = 90, hjust = .5, vjust = 0.5, face = "bold"),
+        axis.title.y = element_text(colour = "black", size = 30, angle = 90, hjust = .5, vjust = 0, face = "bold", margin = margin(r = 10)),
+        axis.text.y = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold")) + 
+  theme(legend.position="top")
+bmod_bio_plot
+
+setwd("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs")
+ggsave("Best-fit_model_with_biomass_data.png", dpi = 300, units = "cm", height = 20, width = 40)
+
+#> NAO INDEX DATA
+rm(list = ls())
+
+nao <- read_csv("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs/Covariates/Cov_NAO.csv")
+nao$year <- 1996:2019
+head(nao, 3)
+
+nao1 <- mutate(nao, type = case_when(
+  NAO < 0 ~ "NEGATIVE",
+  NAO > 0 ~ "POSITIVE"
+))
+
+nao_plot <- ggplot(data=nao1, aes(year, NAO)) +
+  geom_bar(stat="identity", aes(fill=type)) +
+  geom_hline(yintercept = 0, colour = "green", linetype = "dashed") +
+  scale_fill_manual(values = c("POSITIVE"="red", "NEGATIVE"="deepskyblue3")) +
+  guides(fill="none") + 
+  xlab("Year") + ylab("NAO index") +
+  scale_x_continuous(breaks=1996:2019) +
+  theme(panel.border = element_rect(linetype = "solid", fill = NA),
+        panel.background = element_rect(fill ="white"),
+        panel.grid.major.x = element_blank(), 
+        panel.grid.major.y = element_blank(), 
+        axis.title.x = element_text(colour = "black", size = 30, angle = 0, hjust = .5, vjust = 0, face = "bold"),
+        axis.text.x = element_text(colour = "black", size = 25, angle = 90, hjust = .5, vjust = 0.5, face = "bold"),
+        axis.title.y = element_text(colour = "black", size = 30, angle = 90, hjust = .5, vjust = 0, face = "bold", margin = margin(r = 10)),
+        axis.text.y = element_text(colour = "black", size = 25, angle = 0, hjust = .5, vjust = 0, face = "bold"))
+nao_plot
+
+setwd("/Users/macbookairjulio/Documents/MARSS models/3. Figures_Graphs")
+ggsave("NAO_index_plot.png", dpi = 300, units = "cm", height = 20, width = 40)
+
+#### OUTPUT ###
+

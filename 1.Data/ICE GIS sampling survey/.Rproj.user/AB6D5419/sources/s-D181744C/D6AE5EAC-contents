@@ -1,0 +1,60 @@
+##################################
+#  Convert .csv  into .shp files #
+##################################
+#
+# It is a systematic manner to (1) (2) (3)
+#
+# Authors: Julio Ubeda Quesada
+# Contact: julioubedaquesada@gmail.com
+# Institution: Aristotle University of Thessaloniki
+# Last modified: January 2022
+##################################
+rm(list=ls())
+
+#> This script is written in a fix directory. Use the following function to fix a new one if it's necessary.
+setwd()
+
+#> Libraries. Default libraries included, make sure you install and load if you need more.
+install.packages(c("rgdal", "sp"))
+library(rgdal)
+library(sp)
+library(sf)
+library(tidyverse)
+
+#> 1. Data.
+IceData <- read.csv(file="iceland_greenland_strata.csv", header=TRUE, sep=",")
+str(IceData)
+class(IceData) # data.frame
+
+#> 2. Transform to a Spatial file with the fittest projection to out coordinates.
+#> You can check out what CRS fits the best with your data here:https://www.spatialreference.org.
+IceData_prj84 <- st_as_sf(IceData, coords = c("lon", "lat"), crs = 4326) # EPSG
+st_crs(IceData_prj84)
+class(IceData_prj84) # sf     data.frame
+
+plot(IceData_prj84$geometry, 
+     main="Map of Plot Locations")
+
+st_write(IceData_prj84, "ice_ghl_strata_POINT.shp")
+
+#> 3. Transform the Geometry type POINT into Geometry type POLYGON.
+IceData %>%
+  st_as_sf(coords = c("Lon", "Lat"), crs = 4326) %>%
+  group_by(SitePondGpsRep) %>%
+  summarise(geometry = st_combine(geometry)) %>%
+  st_cast("POLYGON") %>%
+  plot()
+
+IceData_prj84_POL = st_sf(
+  aggregate(IceData_prj84$geometry,
+            list(IceData_prj84$stratum),
+    function(g){
+      st_cast(st_combine(g),"POLYGON")
+    }
+  ))
+dat %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
+  group_by(SitePondGpsRep) %>%
+  summarise(geometry = st_combine(geometry)) %>%
+  st_cast("POLYGON")
+st_write(IceData_prj84_POL, "ice_strata_Julio.shp")

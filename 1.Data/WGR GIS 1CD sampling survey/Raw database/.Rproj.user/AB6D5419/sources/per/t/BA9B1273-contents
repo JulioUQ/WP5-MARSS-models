@@ -1,0 +1,61 @@
+### Preparing East Greenland data ####
+
+## Description: this script starts with data obtained from the access database and then proceeds through
+# it in a systematic manner to (1) to obtain the proportion of each sex from the total abundance in each zone (2).
+
+##Authors:  Julio Úbeda Quesada
+
+## Greenland Institute of Natural Resources (GINR, Nuuk)
+##Last modified: Novemberr-2021
+
+#--------------About sharing: this script was written using the "projects workflow", thus all paths are relative
+#--------------Make sure to change to your own relative paths
+
+rm(list=ls())
+
+#Libraries. Default libraries included, make sure you install and load if you need more
+# install.packages(c("tidyverse","plyr",'dplyr', 'readxl',"ggpubr")) ONLY IF YOU DINT INSTALL THEM YET
+
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(ggpubr)
+
+### DATASET ###
+
+# Time-series of Abundance data from a combine trawl survey in 0A-1CD (Canada and Greenland, > 400 m) 
+l.EGR <- read_csv("D_LF_GHLE_98-17 Strata Sex Julio.csv", col_names = TRUE)
+
+dt.EGR <- read_csv("D_TOTAL Abundance_GHLE_98-17 Year Sex Julio.csv", col_names = TRUE)
+
+sapply(l.EGR, function(x) length(unique(x)))
+sapply(dt.EGR, function(x) length(unique(x)))
+
+names(dt.EGR)[3] <- 'count'
+
+## 5. PLOTTING ABUNDANCES in Iceland.
+
+ice_2_plot <- ggplot(ice_2 ,aes(year, N , group = 1)) +
+  geom_line(stat="identity", colour="blue", linetype =1)+ 
+  geom_point(colour="blue") +
+  labs(title = "") +
+  xlab ("") + ylab ("") + 
+  theme(axis.title=element_text(size=15, face ="bold"),
+        panel.border = element_rect(linetype = "solid", fill = NA),
+        panel.background = element_rect(fill ="white"),
+        panel.grid.major = element_line(colour ="gray"), 
+        axis.text.y = element_text(colour = "black", size = 15, angle = 0, hjust = .5, vjust = 0, face = "bold"),
+        axis.text.x = element_text(colour = "black", size = 15, angle = 0, hjust = .5, vjust = 0, face = "bold"),
+        axis.ticks.x = element_blank())
+
+annotate_figure(ice_2_plot,
+                top = text_grob("Greenland halibut abundance in East Greenland survey", color = "Black", face = "bold", size = 22),
+                bottom = text_grob("Year", color = "black", size =15,  face = "bold"),
+                # hjust = 1, x = 1, face = "italic", size = 10,
+                left = text_grob("Abundance ('000s)", color = "Black", rot = 90, size = 20, face = "bold"))
+
+ggsave("Temporal_abundance_distribution_East Greenland_plot.png", dpi = 300, units = "cm", height = 25, width = 40) 
+
+## 6. The whole process have been saved in datasets called:
+
+write.table(ice_2,"east Greenland abundance times-series.csv", col.names=TRUE, row.names=FALSE, sep=",")
