@@ -1,4 +1,4 @@
-## Multivarirate Autoregressive State-Space (MARSS) models to examine stock structure of Greenland halibut in the North Atlantic.
+## Multivariate Autoregressive State-Space (MARSS) models to examine stock structure of Greenland halibut in the North Atlantic.
 
 Exploited marine resources can be managed more effectively when accurate information on population structure is available.    
 
